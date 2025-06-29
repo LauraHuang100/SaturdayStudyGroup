@@ -37,7 +37,12 @@
         </section>
 
         <section id="ai-chat" class="chat-section grid-item">
-            <h2>AI 對話助手</h2>
+            <div class="chat-header">
+                <h2>AI 對話助手</h2>
+                <button id="maximizeChat" class="maximize-button">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
             <div class="chat-container">
                 <div class="chat-messages" id="chatMessages">
                     <!-- 消息將在這裡動態添加 -->
@@ -61,6 +66,6 @@
         </footer>
     </div>
 
-    <script src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html> 
