@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laura's Portfolio</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <span class="logo-text">Laura</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" class="active">首頁</a></li>
+                <li><a href="#about">關於我</a></li>
+                <li><a href="#skills">技能</a></li>
+                <li><a href="#projects">作品集</a></li>
+                <li><a href="#contact">聯絡我</a></li>
+            </ul>
+            <div class="menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 首頁區塊 -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Hi, I'm <span class="highlight">Laura</span></h1>
+            <p class="hero-subtitle">Web Developer & Designer</p>
+            <div class="hero-buttons">
+                <a href="#projects" class="btn primary-btn">查看作品</a>
+                <a href="#contact" class="btn secondary-btn">聯絡我</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse"></div>
+            <p>向下滾動</p>
+        </div>
+    </section>
+
+    <!-- 關於我區塊 -->
+    <section id="about" class="about">
+        <div class="section-container">
+            <h2 class="section-title">關於我</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>我是一位充滿熱情的網頁開發者，專注於創建美觀且實用的網站。我相信好的設計不僅要看起來漂亮，更要能夠解決問題。</p>
+                    <p>在我的作品集中，您可以看到我如何將創意想法轉化為實際的專案。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技能區塊 -->
+    <section id="skills" class="skills">
+        <div class="section-container">
+            <h2 class="section-title">技能專長</h2>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <i class="fas fa-code"></i>
+                    <h3>前端開發</h3>
+                    <p>HTML, CSS, JavaScript</p>
+                </div>
+                <div class="skill-card">
+                    <i class="fas fa-paint-brush"></i>
+                    <h3>網頁設計</h3>
+                    <p>UI/UX, Responsive Design</p>
+                </div>
+                <div class="skill-card">
+                    <i class="fas fa-database"></i>
+                    <h3>後端技術</h3>
+                    <p>Node.js, SQL</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 作品集區塊 -->
+    <section id="projects" class="projects">
+        <div class="section-container">
+            <h2 class="section-title">作品集</h2>
+            <div class="projects-grid">
+                <!-- 作品卡片將通過JavaScript動態添加 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- AI聊天室區塊 -->
+    <section id="chat" class="chat">
+        <div class="section-container">
+            <h2 class="section-title">AI 助理</h2>
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai-message">
+                        <div class="message-content">
+                            您好！我是Laura的AI助理，有什麼我可以幫您的嗎？
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="messageInput" placeholder="輸入訊息...">
+                    <button id="sendButton">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 聯絡表單區塊 -->
+    <section id="contact" class="contact">
+        <div class="section-container">
+            <h2 class="section-title">聯絡我</h2>
+            <div class="contact-content">
+                <form id="contactForm" class="contact-form">
+                    <div class="form-group">
+                        <input type="text" id="name" required placeholder="您的名字">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" required placeholder="電子郵件">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="message" required placeholder="訊息內容"></textarea>
+                    </div>
+                    <button type="submit" class="btn primary-btn">發送訊息</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- 頁尾 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="#" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+            </div>
+            <p>&copy; 2024 Laura's Portfolio. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
