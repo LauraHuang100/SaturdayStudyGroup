@@ -1,5 +1,9 @@
 // Import Google GenAI
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 // DOM elements
 const menuBtn = document.querySelector('.menu-btn');
@@ -9,11 +13,9 @@ const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 
 // Gemini API Configuration
-const GEMINI_API_KEY = 'YOUR_API_KEY'; // Please replace with your API key
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-
-// Initialize Gemini API
+let genAI;
 let chatModel;
+let isApiReady = false;
 
 // Navigation functionality
 menuBtn.addEventListener('click', () => {
@@ -31,12 +33,47 @@ window.addEventListener('scroll', () => {
 });
 
 // Initialize Gemini API
+async function initializeConfig() {
+    try {
+        const response = await fetch('/api/config');
+        const config = await response.json();
+        
+        if (!config.apiKey) {
+            throw new Error('API key not found');
+        }
+
+        genAI = new GoogleGenerativeAI(config.apiKey);
+        return true;
+    } catch (error) {
+        console.error('無法載入 API 配置:', error);
+        addMessage('系統錯誤：無法載入 API 配置，請檢查 .env 文件。', false);
+        messageInput.disabled = true;
+        sendButton.disabled = true;
+        return false;
+    }
+}
+
 async function initializeGeminiAPI() {
     try {
-        chatModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+        // 使用新的 API 格式初始化模型
+        chatModel = genAI.getGenerativeModel({
+            model: "gemini-pro"
+        });
+        
+        // 發送測試消息以確認連接
+        const testResponse = await chatModel.generateContent({
+            contents: "Hello, please respond with 'Connection successful' if you can receive this message."
+        });
+        
+        console.log("API Test Response:", await testResponse.response.text());
+        isApiReady = true;
+        addMessage('AI assistant is ready, welcome to start the conversation!', false);
         return true;
     } catch (error) {
         console.error('Gemini API initialization error:', error);
+        addMessage('System error: Unable to connect to AI service, please check network connection or API key setting.', false);
+        messageInput.disabled = true;
+        sendButton.disabled = true;
         return false;
     }
 }
@@ -59,39 +96,79 @@ function addMessage(message, isUser = false) {
 
 // Handle sending messages
 async function handleSendMessage() {
+    if (!isApiReady) {
+        addMessage('System not ready, please try again later.', false);
+        return;
+    }
+
     const message = messageInput.value.trim();
     if (!message) return;
 
     // Display user message
     addMessage(message, true);
     messageInput.value = '';
+    
+    // Disable input until response is received
+    messageInput.disabled = true;
+    sendButton.disabled = true;
 
     try {
         // Display loading status
         const loadingDiv = document.createElement('div');
         loadingDiv.className = 'message ai-message';
-        loadingDiv.innerHTML = '<div class="message-content">思考中...</div>';
+        loadingDiv.innerHTML = '<div class="message-content">Thinking...</div>';
         chatMessages.appendChild(loadingDiv);
 
-        // Call Gemini API
-        const result = await chatModel.generateContent(message);
-        const response = await result.response;
+        // 使用新的 API 格式調用 Gemini
+        const result = await chatModel.generateContent({
+            contents: message,
+            generationConfig: {
+                temperature: 0.7,
+                topK: 40,
+                topP: 0.95,
+                maxOutputTokens: 1024,
+            },
+            safetySettings: [
+                {
+                    category: "HARM_CATEGORY_HARASSMENT",
+                    threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                },
+                {
+                    category: "HARM_CATEGORY_HATE_SPEECH",
+                    threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                },
+                {
+                    category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                },
+                {
+                    category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                    threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                }
+            ]
+        });
         
         // Remove loading status
         chatMessages.removeChild(loadingDiv);
         
         // Display AI response
+        const response = await result.response;
         addMessage(response.text(), false);
     } catch (error) {
         console.error('Sending message error:', error);
-        addMessage('抱歉，發生錯誤。請稍後再試。', false);
+        addMessage('Sorry, an error occurred. Please try again later.', false);
+    } finally {
+        // Re-enable input
+        messageInput.disabled = false;
+        sendButton.disabled = false;
     }
 }
 
 // Event listeners
 sendButton.addEventListener('click', handleSendMessage);
 messageInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
         handleSendMessage();
     }
 });
@@ -110,6 +187,8 @@ const projects = [
 // Dynamic project rendering
 function renderProjects() {
     const projectsGrid = document.querySelector('.projects-grid');
+    if (!projectsGrid) return;
+    
     projects.forEach(project => {
         const projectCard = document.createElement('div');
         projectCard.className = 'project-card';
@@ -125,16 +204,20 @@ function renderProjects() {
 
 // Form submission processing
 const contactForm = document.getElementById('contactForm');
-contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(contactForm);
-    // You can add form submission logic here
-    alert('訊息已送出！');
-    contactForm.reset();
-});
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(contactForm);
+        // You can add form submission logic here
+        alert('訊息已送出！');
+        contactForm.reset();
+    });
+}
 
 // Initialize when the page is loaded
 document.addEventListener('DOMContentLoaded', async () => {
-    await initializeGeminiAPI();
+    if (await initializeConfig()) {
+        await initializeGeminiAPI();
+    }
     renderProjects();
 }); 
